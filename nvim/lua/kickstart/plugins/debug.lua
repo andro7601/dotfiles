@@ -39,11 +39,13 @@ require('mason-nvim-dap').setup {
 
   -- You'll need to check that you have the required things installed
   -- online, please don't ask me how to install them :)
-  ensure_installed = {
-    -- Update this to ensure that you have the debuggers for the langs you want
+ensure_installed = {
     'delve',
-  },
-}
+    'codelldb', 
+},
+
+ }
+
 
 -- Dap UI setup
 -- For more information, see |:help nvim-dap-ui|
@@ -92,4 +94,27 @@ require('dap-go').setup {
     -- See https://github.com/leoluz/nvim-dap-go/blob/main/README.md#configuring
     detached = vim.fn.has 'win32' == 0,
   },
+}
+
+dap.adapters.codelldb = {
+    type = 'server',
+    port = '${port}',
+    executable = {
+        command = 'codelldb',
+        args = { '--port', '${port}' },
+    },
+}
+
+dap.configurations.c = {
+    {
+        name = 'Launch',
+        type = 'codelldb',
+        request = 'launch',
+        program = function()
+            return vim.fn.input('binary: ', vim.fn.getcwd() .. '/', 'file')
+        end,
+        cwd = '${workspaceFolder}',
+        stopOnEntry = false,
+        args = {},
+    },
 }
